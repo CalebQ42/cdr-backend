@@ -6,8 +6,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/CalebQ42/stupid-backend"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -38,7 +40,35 @@ func (b Backend) UploadDie(req *stupid.Request) bool {
 		req.Resp.WriteHeader(http.StatusRequestEntityTooLarge)
 		return true
 	}
-	//TODO
+	var toUpload = UploadedDie{
+		Die:        make(map[string]any),
+		ID:         uuid.New().String(),
+		Expiration: time.Now().Add(12 * time.Hour).Round(time.Hour).Unix(),
+	}
+	err = json.Unmarshal(bod, &toUpload.Die)
+	if err != nil {
+		req.Resp.WriteHeader(http.StatusInternalServerError)
+		log.Println("Error unmarshalling body:", err)
+		return true
+	}
+	if toUpload.Die["uuid"] != nil {
+		delete(toUpload.Die, "uuid")
+	}
+	_, err = b.db.Collection("Dice").InsertOne(context.TODO(), toUpload)
+	if err != nil {
+		req.Resp.WriteHeader(http.StatusInternalServerError)
+		log.Println("Error uploading die:", err)
+		return true
+	}
+	out, err := json.Marshal(map[string]any{"id": toUpload.ID, "expiration": toUpload.Expiration})
+	if err != nil {
+		req.Resp.WriteHeader(http.StatusInternalServerError)
+		log.Println("Error marshalling upload result:", err)
+		return true
+	}
+	req.Resp.Header().Set("Content-Type", "application/json")
+	req.Resp.Write(out)
+	req.Resp.WriteHeader(http.StatusCreated)
 	return true
 }
 
