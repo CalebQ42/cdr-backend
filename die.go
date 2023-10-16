@@ -25,6 +25,10 @@ func (b Backend) UploadDie(req *stupid.Request) bool {
 		req.Resp.WriteHeader(http.StatusBadRequest)
 		return true
 	}
+	if req.Method != http.MethodPost {
+		req.Resp.WriteHeader(http.StatusBadRequest)
+		return true
+	}
 	if req.Body == nil {
 		req.Resp.WriteHeader(http.StatusBadRequest)
 		return true
@@ -66,13 +70,17 @@ func (b Backend) UploadDie(req *stupid.Request) bool {
 		log.Println("Error marshalling upload result:", err)
 		return true
 	}
-	req.Resp.Write(out)
 	req.Resp.WriteHeader(http.StatusCreated)
+	req.Resp.Write(out)
 	return true
 }
 
 func (b Backend) GetDie(req *stupid.Request) bool {
 	if len(req.Path) != 2 {
+		req.Resp.WriteHeader(http.StatusBadRequest)
+		return true
+	}
+	if req.Method != http.MethodGet {
 		req.Resp.WriteHeader(http.StatusBadRequest)
 		return true
 	}
