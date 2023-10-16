@@ -2,12 +2,14 @@ module github.com/CalebQ42/cdr-backend
 
 go 1.21.3
 
-require go.mongodb.org/mongo-driver v1.12.1
+require (
+	github.com/CalebQ42/stupid-backend v1.1.1
+	github.com/google/uuid v1.3.0
+	go.mongodb.org/mongo-driver v1.12.1
+)
 
 require (
-	github.com/CalebQ42/stupid-backend v1.1.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pascaldekloe/jwt v1.12.0 // indirect

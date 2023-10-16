@@ -54,7 +54,7 @@ func (b Backend) UploadDie(req *stupid.Request) bool {
 	if toUpload.Die["uuid"] != nil {
 		delete(toUpload.Die, "uuid")
 	}
-	_, err = b.db.Collection("Dice").InsertOne(context.TODO(), toUpload)
+	_, err = b.db.Collection("dice").InsertOne(context.TODO(), toUpload)
 	if err != nil {
 		req.Resp.WriteHeader(http.StatusInternalServerError)
 		log.Println("Error uploading die:", err)
@@ -76,7 +76,7 @@ func (b Backend) GetDie(req *stupid.Request) bool {
 		req.Resp.WriteHeader(http.StatusBadRequest)
 		return true
 	}
-	res := b.db.Collection("Dice").FindOne(context.TODO(), bson.M{"_id": req.Path[1]})
+	res := b.db.Collection("dice").FindOne(context.TODO(), bson.M{"_id": req.Path[1]})
 	if res.Err() == mongo.ErrNoDocuments {
 		req.Resp.WriteHeader(http.StatusNotFound)
 		return true

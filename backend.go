@@ -70,9 +70,9 @@ func (b Backend) Extension(req *stupid.Request) bool {
 		return false
 	}
 	switch req.Path[0] {
-	case "Upload":
-		b.UploadDie(req)
-	case "Die":
+	case "upload":
+		return b.UploadDie(req)
+	case "die":
 		return b.GetDie(req)
 	}
 	return false
