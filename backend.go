@@ -43,7 +43,7 @@ func (b Backend) IgnoreOldVersionCrashes() bool {
 	return true
 }
 
-func (b Backend) CurrentVersion() (out []string) {
+func (b Backend) CurrentVersions() (out []string) {
 	verCol := b.db.Collection("versions")
 	cur, err := verCol.Find(context.TODO(), bson.M{})
 	if err != nil {

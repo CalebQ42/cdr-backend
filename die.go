@@ -66,7 +66,6 @@ func (b Backend) UploadDie(req *stupid.Request) bool {
 		log.Println("Error marshalling upload result:", err)
 		return true
 	}
-	req.Resp.Header().Set("Content-Type", "application/json")
 	req.Resp.Write(out)
 	req.Resp.WriteHeader(http.StatusCreated)
 	return true
@@ -99,7 +98,6 @@ func (b Backend) GetDie(req *stupid.Request) bool {
 		log.Println("Error marshalling die:", err)
 		return true
 	}
-	req.Resp.Header().Set("Content-Type", "application/json")
 	req.Resp.Write(byts)
 	return true
 }
