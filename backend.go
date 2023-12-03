@@ -5,8 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/CalebQ42/stupid-backend"
-	"github.com/CalebQ42/stupid-backend/pkg/db"
+	"github.com/CalebQ42/stupid-backend/v2"
+	"github.com/CalebQ42/stupid-backend/v2/crash"
+	"github.com/CalebQ42/stupid-backend/v2/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -39,30 +40,10 @@ func (b Backend) Crashes() db.CrashTable {
 	return db.NewMongoTable(b.db.Collection("crashes"))
 }
 
-func (b Backend) IgnoreOldVersionCrashes() bool {
-	return true
-}
-
-func (b Backend) CurrentVersions() (out []string) {
-	verCol := b.db.Collection("versions")
-	cur, err := verCol.Find(context.TODO(), bson.M{})
-	if err != nil {
-		log.Println("Error getting current version:", err)
-		return
-	}
-	var vers []struct {
-		ID  string `bson:"_id"`
-		Ver string `bson:"version"`
-	}
-	err = cur.All(context.TODO(), &vers)
-	if err != nil {
-		log.Println("Error marshalling current versions:", err)
-		return
-	}
-	for _, v := range vers {
-		out = append(out, v.Ver)
-	}
-	return
+func (s Backend) AcceptCrash(cr crash.Individual) bool {
+	res := s.db.Collection("versions").FindOne(context.TODO(), bson.M{"version": cr.Version})
+	return res.Err() != mongo.ErrNoDocuments
+	//TODO: Lookup a list of known "bad" errors that get automatically ignored.
 }
 
 func (b Backend) Extension(req *stupid.Request) bool {
